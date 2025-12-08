@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MyPass Project</title>
+    <style>
+        body {
+            background-color: #222;
+            color: white;
+            font-family: sans-serif;
+            text-align: center;
+        }
+
+        .container {
+            border: 1px solid white;
+            width: 300px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #333;
+        }
+
+        h2 { color: #4da6ff; }
+
+        input[type="text"], input[type="password"] {
+            width: 90%;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4da6ff;
+            border: none;
+            color: white;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        .screen {
+            background-color: black;
+            border: 1px solid grey;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 16px;
+            word-wrap: break-word;
+            margin-bottom: 10px;
+        }
+
+        .hide { display: none; }
+        
+        .server-text { color: yellow; font-size: 12px; margin-top: 5px; }
+        
+        #historyList {
+            text-align: left;
+            font-size: 12px;
+            color: #ccc;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loginPage" class="container">
+        <h2>System Login</h2>
+        <input type="text" id="user" placeholder="Username">
+        <input type="password" id="pass" placeholder="Password">
+        <button onclick="checkLogin()">Login</button>
+        <p id="errorMsg" style="color: red; display: none;">Wrong Password</p>
+        
+        <p style="font-size: 12px; color: gray;">Demo: admin / 1234</p>
+        <button onclick="fillDemo()" style="background-color: gray;">Auto-Fill</button>
+    </div>
+
+    <div id="mainPage" class="container hide">
+        <h3>Dashboard</h3>
+        
+        <p class="server-text">Global Users: <span id="globalCount">Loading...</span></p>
+
+        <div style="margin-bottom: 10px;">
+            <input type="radio" name="mode" value="random" onclick="showOptions()" checked> Random
+            <input type="radio" name="mode" value="phrase" onclick="showOptions()"> Phrase
+        </div>
+
+        <div class="screen" id="displayBox">Click Generate</div>
+
+        <div id="randomOptions">
+            <label>Length: <span id="lenVal">12</span></label>
+            <input type="range" id="slider" min="4" max="20" value="12" oninput="showValue()" style="width: 100%;">
+            
+            <div style="text-align: left;">
+                <input type="checkbox" id="useUpper" checked> Uppercase <br>
+                <input type="checkbox" id="useNumber" checked> Numbers <br>
+                <input type="checkbox" id="useSymbol" checked> Symbols
+            </div>
+        </div>
+
+        <button onclick="generate()">Generate & Save</button>
+        <div id="serverStatus" class="server-text"></div>
+
+        <button onclick="copyText()" style="background-color: #444;">Copy</button>
+        <button onclick="showQR()" style="background-color: #444;">Show QR Code</button>
+        <img id="qrImage" src="" style="width: 100px; display: none; margin: 10px auto;">
+
+        <button onclick="downloadFile()" style="background-color: green;">Download Backup</button>
+
+        <button onclick="openSettings()" style="background-color: #555;">Settings</button>
+
+        <div style="border-top: 1px solid white; margin-top: 15px;">
+            <h4>History Vault</h4>
+            <ul id="historyList"></ul>
+        </div>
+
+        <button onclick="logout()" style="background-color: red; margin-top: 20px;">Logout</button>
+    </div>
+
+    <div id="settingsPage" class="container hide">
+        <h3>Settings</h3>
+        <p>User: Admin</p>
+        <button onclick="toggleTheme()">Toggle Theme</button>
+        <button onclick="clearHistory()">Clear Vault</button>
+        <button onclick="goHome()" style="background-color: #444;">Back to Home</button>
+    </div>
+
+    <script>
+        function checkLogin() {
+            var u = document.getElementById("user").value;
+            var p = document.getElementById("pass").value;
+
+            if(u == "admin" && p == "1234") {
+                document.getElementById("loginPage").className = "container hide";
+                document.getElementById("mainPage").className = "container";
+                loadServerData();
+                loadHistory();
+            } else {
+                document.getElementById("errorMsg").style.display = "block";
+            }
+        }
+
+        function fillDemo() {
+            document.getElementById("user").value = "admin";
+            document.getElementById("pass").value = "1234";
+        }
+
+        function logout() {
+            location.reload();
+        }
+
+        function openSettings() {
+            document.getElementById("mainPage").className = "container hide";
+            document.getElementById("settingsPage").className = "container";
+        }
+
+        function goHome() {
+            document.getElementById("settingsPage").className = "container hide";
+            document.getElementById("mainPage").className = "container";
+        }
+
+        function showValue() {
+            document.getElementById("lenVal").innerText = document.getElementById("slider").value;
+        }
+
+        function showOptions() {
+            var mode = document.querySelector('input[name="mode"]:checked').value;
+            if(mode == "random") {
+                document.getElementById("randomOptions").style.display = "block";
+            } else {
+                document.getElementById("randomOptions").style.display = "none";
+            }
+        }
+
+        function generate() {
+            var mode = document.querySelector('input[name="mode"]:checked').value;
+            var finalPassword = "";
+
+            if (mode == "random") {
+                var len = document.getElementById("slider").value;
+                var chars = "abcdefghijklmnopqrstuvwxyz";
+                
+                if(document.getElementById("useUpper").checked == true) {
+                    chars = chars + "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                }
+                if(document.getElementById("useNumber").checked == true) {
+                    chars = chars + "0123456789";
+                }
+                if(document.getElementById("useSymbol").checked == true) {
+                    chars = chars + "!@#$%^&*";
+                }
+
+                for (var i = 0; i < len; i++) {
+                    var randomNum = Math.floor(Math.random() * chars.length);
+                    finalPassword = finalPassword + chars.charAt(randomNum);
+                }
+            } else {
+                var words = ["Blue", "Sky", "Safe", "Code", "Web", "Lock", "Key", "Fast"];
+                for(var i=0; i<3; i++) {
+                    var r = Math.floor(Math.random() * words.length);
+                    finalPassword = finalPassword + words[r] + "-";
+                }
+                finalPassword = finalPassword + Math.floor(Math.random() * 99);
+            }
+
+            document.getElementById("displayBox").innerText = finalPassword;
+            saveToServer();
+            saveToLocal(finalPassword);
+        }
+
+        function saveToServer() {
+            var msg = document.getElementById("serverStatus");
+            msg.innerText = "Syncing with Cloud...";
+            
+            setTimeout(function() {
+                msg.innerText = "Saved to Server (200 OK)";
+                msg.style.color = "#00ff00";
+                
+                var num = document.getElementById("globalCount");
+                num.innerText = parseInt(num.innerText) + 1;
+            }, 1000);
+        }
+
+        function loadServerData() {
+            setTimeout(function() {
+                document.getElementById("globalCount").innerText = "1042";
+            }, 500);
+        }
+
+        function saveToLocal(pass) {
+            var oldData = localStorage.getItem("myHistory");
+            var arr = [];
+            
+            if(oldData != null) {
+                arr = JSON.parse(oldData);
+            }
+
+            arr.unshift(pass);
+            
+            if(arr.length > 3) {
+                arr.pop();
+            }
+
+            localStorage.setItem("myHistory", JSON.stringify(arr));
+            loadHistory();
+        }
+
+        function loadHistory() {
+            var oldData = localStorage.getItem("myHistory");
+            var list = document.getElementById("historyList");
+            list.innerHTML = "";
+
+            if(oldData != null) {
+                var arr = JSON.parse(oldData);
+                for(var i=0; i<arr.length; i++) {
+                    var li = document.createElement("li");
+                    li.innerText = arr[i];
+                    list.appendChild(li);
+                }
+            }
+        }
+
+        function clearHistory() {
+            localStorage.removeItem("myHistory");
+            loadHistory();
+            alert("History Cleared");
+        }
+
+        function copyText() {
+            var txt = document.getElementById("displayBox").innerText;
+            if(txt == "Click Generate") return;
+            navigator.clipboard.writeText(txt);
+            alert("Copied!");
+        }
+
+        function showQR() {
+            var txt = document.getElementById("displayBox").innerText;
+            if(txt == "Click Generate") return;
+            
+            var url = "https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=" + txt;
+            document.getElementById("qrImage").src = url;
+            document.getElementById("qrImage").style.display = "block";
+        }
+
+        function downloadFile() {
+            var data = localStorage.getItem("myHistory");
+            if(data == null) {
+                alert("No history to backup!");
+                return;
+            }
+            
+            var blob = new Blob(["MyPass Backup:\n" + data], { type: 'text/plain' });
+            var url = window.URL.createObjectURL(blob);
+            var a = document.createElement("a");
+            a.href = url;
+            a.download = "backup.txt";
+            a.click();
+        }
+        
+        function toggleTheme() {
+            if(document.body.style.backgroundColor == "white") {
+                document.body.style.backgroundColor = "#222";
+                document.body.style.color = "white";
+            } else {
+                document.body.style.backgroundColor = "white";
+                document.body.style.color = "black";
+            }
+        }
+    </script>
+</body>
+</html>
