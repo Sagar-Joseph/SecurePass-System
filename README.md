@@ -29,8 +29,5 @@ The system is built with 8 distinct functional modules:
 
 <img width="940" height="529" alt="image" src="https://github.com/user-attachments/assets/ea54f092-b789-4e58-87dc-4724281fa8c9" />
 
-<img width="940" height="529" alt="image" src="https://github.com/user-attachments/assets/7df30047-2aaf-47d6-9928-a2d40d273ed7" />
-
-
 ## 👤 Author
 **Sagar Joseph**
