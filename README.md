@@ -1,33 +1,35 @@
-# SecurePass Generator 🔐
+# MyPass Security Dashboard 🛡️
 
-A lightweight, secure, and offline-capable password generator built as part of the Web Stack Development course.
+A comprehensive, client-side security dashboard featuring user authentication, password generation, and QR code export capabilities. Built for the Web Stack Development course.
 
 ## 🚀 Live Demo
-**[Click here to use the App](https://sagar-joseph.github.io/SecurePass-System/)**
+**[Click here to launch MyPass](https://sagar-joseph.github.io/SecurePass-System/)**
+
+> **Login Credentials for Demo:**
+> * **Username:** `admin`
+> * **Password:** `1234`
 
 ## 📋 Project Overview
-This application helps users generate high-entropy passwords to improve their digital security. Unlike online tools that send data to a server, **SecurePass** runs entirely in the browser (Client-Side) using vanilla JavaScript, ensuring maximum privacy.
+MyPass goes beyond simple password generation. It simulates a full-stack security environment entirely in the browser. It features a secure login gateway, a "History Vault" for persistence, and integration with external APIs for mobile transfer via QR codes.
 
-## ✨ Key Features (Modules)
-The system is built with 8 distinct functional modules:
-1. **Configuration Interface**: Custom sliders and toggles for password length (6-20) and complexity.
-2. **Randomization Engine**: Uses algorithmic logic to generate unpredictable character strings.
-3. **Strength Analysis**: Real-time evaluation of password quality (Weak/Medium/Strong).
-4. **Visual Feedback**: Dynamic color-coded strength bar (Red/Orange/Green).
-5. **History Persistence**: Automatically saves the last 3 passwords using `LocalStorage`.
-6. **Clipboard Manager**: One-click functionality to copy passwords.
-7. **Validation Handler**: Prevents generation if no character types are selected.
-8. **Notification System**: User feedback alerts (e.g., "Copied to Clipboard").
+## ✨ Key Features
+* **🔐 Authentication Gateway:** Secure login screen restricts access to the dashboard.
+* **☁️ Cloud Simulation:** Mimics server latency and status codes (200 OK) for a realistic user experience.
+* **📱 QR Code Export:** Generates scannable QR codes for instant password transfer to mobile devices.
+* **🎨 Dual-Theme UI:** Toggle between "Hacker Dark" and "Clean White" modes.
+* **📂 Backup System:** Download your history vault as a local `.txt` file.
+* **🧠 Dual-Mode Engine:** Generate random high-entropy strings OR memorable pass-phrases.
 
 ## 🛠️ Tech Stack
-* **Frontend**: HTML5, CSS3 (Dark Mode)
-* **Logic**: JavaScript (ES6)
-* **Storage**: Browser LocalStorage API
+* **Frontend:** HTML5, CSS3 (Responsive & Themed)
+* **Logic:** JavaScript (ES6), DOM Manipulation
+* **API:** `goqr.me` API (for QR Generation)
+* **Storage:** LocalStorage (Client-side persistence)
 
 ## 📸 Screenshots
-<img width="940" height="529" alt="image" src="https://github.com/user-attachments/assets/f35cc603-b65f-4827-9838-fcc6cf150958" />
-
-<img width="940" height="529" alt="image" src="https://github.com/user-attachments/assets/ea54f092-b789-4e58-87dc-4724281fa8c9" />
+<img width="977" height="727" alt="Screenshot 2026-02-08 222034" src="https://github.com/user-attachments/assets/c00725e8-a369-4bfa-9858-bd1ab6d55636" />
+<img width="976" height="1079" alt="Screenshot 2026-02-08 222115" src="https://github.com/user-attachments/assets/f3d29293-124e-462a-98d1-bbf94eb7f4d3" />
+<img width="975" height="584" alt="Screenshot 2026-02-08 222129" src="https://github.com/user-attachments/assets/e5e5dd70-cfb2-4a74-9431-50dffe4c4023" />
 
 ## 👤 Author
 **Sagar Joseph**
